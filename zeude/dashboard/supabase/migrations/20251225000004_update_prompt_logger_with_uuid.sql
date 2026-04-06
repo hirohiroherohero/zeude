@@ -213,4 +213,4 @@ exit 0',
   'active'
 );
 
-COMMENT ON MIGRATION IS 'Add UUID generation to Prompt Logger and create PostToolUse Skill Tracker hook for natural language skill counting';
+-- Add UUID generation to Prompt Logger and create PostToolUse Skill Tracker hook for natural language skill counting

@@ -411,6 +411,9 @@ Key practices:
                     ))}
                   </div>
                 )}
+                {!formData.isGlobal && formData.teams.length === 0 && (
+                  <p className="text-sm text-destructive mt-1">Select at least one team or enable Global</p>
+                )}
               </div>
             </div>
           </div>
@@ -419,7 +422,7 @@ Key practices:
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
             <Button
               onClick={handleSave}
-              disabled={!formData.name || !formData.content || saving}
+              disabled={!formData.name || !formData.content || saving || (!formData.isGlobal && formData.teams.length === 0)}
             >
               {saving ? 'Saving...' : 'Save'}
             </Button>

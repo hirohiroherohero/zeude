@@ -394,6 +394,9 @@ export function MCPDialog({
                 ))}
               </div>
             )}
+            {!formData.isGlobal && formData.teams.length === 0 && (
+              <p className="text-sm text-destructive mt-1">Select at least one team or enable Global</p>
+            )}
           </div>
         </div>
 
@@ -492,7 +495,7 @@ export function MCPDialog({
               Next
             </Button>
           ) : (
-            <Button onClick={onSave} disabled={!formData.name || (!formData.command && !formData.url) || saving}>
+            <Button onClick={onSave} disabled={!formData.name || (!formData.command && !formData.url) || saving || (!formData.isGlobal && formData.teams.length === 0)}>
               {saving ? 'Saving...' : 'Save'}
             </Button>
           )}

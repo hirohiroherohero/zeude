@@ -196,6 +196,7 @@ fi
 # Add fresh config
 echo "" >> "$SHELL_RC"
 echo "# Zeude - Claude telemetry shim (ensures PATH priority)" >> "$SHELL_RC"
+echo "export ZEUDE_DASHBOARD_URL=\"${ZEUDE_DASHBOARD_URL:-$DEFAULT_DASHBOARD}\"" >> "$SHELL_RC"
 echo "$PATH_EXPORT" >> "$SHELL_RC"
 printf "${GREEN}Configured${NC}\n"
 

@@ -313,6 +313,9 @@ export function SkillDialog({
                   ))}
                 </div>
               )}
+              {!formData.isGlobal && formData.teams.length === 0 && (
+                <p className="text-sm text-destructive mt-1">Select at least one team or enable Global</p>
+              )}
             </div>
           </div>
         </div>
@@ -321,7 +324,7 @@ export function SkillDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
           <Button
             onClick={onSave}
-            disabled={!formData.name || !formData.slug || !formData.content || saving}
+            disabled={!formData.name || !formData.slug || !formData.content || saving || (!formData.isGlobal && formData.teams.length === 0)}
           >
             {saving ? 'Saving...' : 'Save'}
           </Button>

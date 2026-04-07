@@ -406,6 +406,9 @@ export default function HooksClient() {
                     ))}
                   </div>
                 )}
+                {!formData.isGlobal && formData.teams.length === 0 && (
+                  <p className="text-sm text-destructive mt-1">Select at least one team or enable Global</p>
+                )}
               </div>
             </div>
           </div>
@@ -414,7 +417,7 @@ export default function HooksClient() {
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
             <Button
               onClick={handleSave}
-              disabled={!formData.name || !formData.scriptContent || saveHook.isPending}
+              disabled={!formData.name || !formData.scriptContent || saveHook.isPending || (!formData.isGlobal && formData.teams.length === 0)}
             >
               {saveHook.isPending ? 'Saving...' : 'Save'}
             </Button>

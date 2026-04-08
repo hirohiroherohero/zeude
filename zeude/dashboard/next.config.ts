@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['recharts', 'lucide-react'],
   },
+  async rewrites() {
+    return [
+      { source: '/v1/logs', destination: '/api/otel/logs' },
+      { source: '/v1/traces', destination: '/api/otel/traces' },
+      { source: '/v1/metrics', destination: '/api/otel/metrics' },
+    ]
+  },
 };
 
 export default withBundleAnalyzer(nextConfig);

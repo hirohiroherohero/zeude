@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Failed to create invite', details: error.message }, { status: 500 })
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zeude.zep.work'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://zeude-vwuo.vercel.app'
 
     return Response.json({
       token: invite.token,

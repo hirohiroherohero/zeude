@@ -24,6 +24,9 @@ export const queryKeys = {
     filtered: (team: string, status: string, search: string) =>
       ['team', { team, status, search }] as const,
   },
+  teams: {
+    all: ['teams'] as const,
+  },
   mcp: {
     all: ['mcp'] as const,
   },

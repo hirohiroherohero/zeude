@@ -138,6 +138,32 @@ export interface Database {
           created_at?: string
         }
       }
+      zeude_teams: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
       zeude_mcp_servers: {
         Row: {
           id: string
@@ -202,6 +228,8 @@ export type OneTimeToken = Database['public']['Tables']['zeude_one_time_tokens']
 export type Session = Database['public']['Tables']['zeude_sessions']['Row']
 export type Invite = Database['public']['Tables']['zeude_invites']['Row']
 export type NewInvite = Database['public']['Tables']['zeude_invites']['Insert']
+export type Team = Database['public']['Tables']['zeude_teams']['Row']
+export type NewTeam = Database['public']['Tables']['zeude_teams']['Insert']
 export type MCPServer = Database['public']['Tables']['zeude_mcp_servers']['Row']
 export type NewMCPServer = Database['public']['Tables']['zeude_mcp_servers']['Insert']
 export type UpdateMCPServer = Database['public']['Tables']['zeude_mcp_servers']['Update']

@@ -36,13 +36,15 @@ export async function POST(req: Request) {
     const token = randomBytes(32).toString('hex')
     const expiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 
+    const createdBy = session.user.id === 'dev-user' ? null : session.user.id
+
     const { data: invite, error } = await supabase
       .from('zeude_invites')
       .insert({
         token,
         team,
         role,
-        created_by: session.user.id,
+        created_by: createdBy,
         expires_at: expiresAt.toISOString(),
       })
       .select()

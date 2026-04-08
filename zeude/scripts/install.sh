@@ -138,7 +138,7 @@ printf "${GREEN}OK${NC}\n"
 
 # 5. Download pre-built binaries
 echo -n "Downloading zeude shim... "
-SHIM_URL="$DOWNLOAD_BASE/releases/claude-$PLATFORM"
+SHIM_URL="$DOWNLOAD_BASE/claude-$PLATFORM"
 if curl -fsSL "$SHIM_URL" -o "$INSTALL_DIR/claude" 2>/dev/null; then
     chmod +x "$INSTALL_DIR/claude"
     printf "${GREEN}OK${NC}\n"
@@ -149,7 +149,7 @@ else
 fi
 
 echo -n "Downloading zeude doctor... "
-DOCTOR_URL="$DOWNLOAD_BASE/releases/zeude-$PLATFORM"
+DOCTOR_URL="$DOWNLOAD_BASE/zeude-$PLATFORM"
 if curl -fsSL "$DOCTOR_URL" -o "$INSTALL_DIR/zeude" 2>/dev/null; then
     chmod +x "$INSTALL_DIR/zeude"
     printf "${GREEN}OK${NC}\n"

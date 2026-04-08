@@ -28,7 +28,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { UserPlus, Key, Settings, Search, Copy, Check, Trash2 } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
+import { UserPlus, Key, Settings, Search, Copy, Check, Trash2, Plus, Users } from 'lucide-react'
 import type { UserRole, UserStatus } from '@/lib/database.types'
 import {
   useTeamUsers,
@@ -36,6 +37,9 @@ import {
   useDeleteUser,
   useGenerateInvite,
   useGenerateKey,
+  useTeams,
+  useCreateTeam,
+  useDeleteTeam,
 } from '@/hooks/use-team'
 import type { UserWithoutKey } from '@/hooks/use-team'
 
@@ -53,6 +57,9 @@ export default function TeamClient() {
   const deleteUserMutation = useDeleteUser()
   const generateInvite = useGenerateInvite()
   const generateKey = useGenerateKey()
+  const { data: allTeams = [] } = useTeams()
+  const createTeam = useCreateTeam()
+  const deleteTeamMutation = useDeleteTeam()
 
   // Invite dialog
   const [inviteOpen, setInviteOpen] = useState(false)
@@ -74,6 +81,11 @@ export default function TeamClient() {
   // Delete dialog
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [deleteUser, setDeleteUser] = useState<UserWithoutKey | null>(null)
+
+  // Create team dialog
+  const [createTeamOpen, setCreateTeamOpen] = useState(false)
+  const [newTeamName, setNewTeamName] = useState('')
+  const [newTeamDescription, setNewTeamDescription] = useState('')
 
   async function handleGenerateInvite() {
     if (!inviteTeam) return
@@ -151,6 +163,22 @@ export default function TeamClient() {
     }
   }
 
+  async function handleCreateTeam() {
+    if (!newTeamName) return
+    if (!/^[A-Za-z0-9_-]+$/.test(newTeamName)) {
+      alert('Team name must contain only letters, numbers, hyphens, and underscores')
+      return
+    }
+    try {
+      await createTeam.mutateAsync({ name: newTeamName, description: newTeamDescription || undefined })
+      setCreateTeamOpen(false)
+      setNewTeamName('')
+      setNewTeamDescription('')
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Failed to create team')
+    }
+  }
+
   function resetInviteDialog() {
     setInviteTeam('')
     setInviteRole('member')
@@ -165,12 +193,60 @@ export default function TeamClient() {
           <h1 className="text-3xl font-bold">Team Members</h1>
           <p className="text-muted-foreground">Manage your team and invite new members</p>
         </div>
-        <Button onClick={() => { resetInviteDialog(); setInviteOpen(true) }}>
-          <UserPlus className="h-4 w-4 mr-2" />
-          Generate Invite Link
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => setCreateTeamOpen(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Team
+          </Button>
+          <Button onClick={() => { resetInviteDialog(); setInviteOpen(true) }}>
+            <UserPlus className="h-4 w-4 mr-2" />
+            Generate Invite Link
+          </Button>
+        </div>
       </div>
 
+      {/* Teams List */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Teams</CardTitle>
+          <CardDescription>Registered teams in your organization</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {allTeams.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-4">No teams created yet</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {allTeams.map((t) => (
+                <div key={t.id} className="flex items-center gap-2 rounded-lg border px-3 py-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium text-sm">{t.name}</span>
+                  {t.description && (
+                    <span className="text-xs text-muted-foreground">— {t.description}</span>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5 text-muted-foreground hover:text-destructive"
+                    onClick={() => {
+                      if (confirm(`Delete team "${t.name}"?`)) {
+                        deleteTeamMutation.mutate(t.id, {
+                          onError: (err) => {
+                            alert(err.message)
+                          },
+                        })
+                      }
+                    }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Members List */}
       <Card>
         <CardHeader>
           <div className="flex items-center gap-4">
@@ -300,11 +376,16 @@ export default function TeamClient() {
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Team</label>
-                <Input
-                  value={inviteTeam}
-                  onChange={(e) => setInviteTeam(e.target.value)}
-                  placeholder="e.g., backend, frontend, devops"
-                />
+                <Select value={inviteTeam} onValueChange={setInviteTeam}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a team" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allTeams.map((t) => (
+                      <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="text-sm font-medium">Role</label>
@@ -357,10 +438,19 @@ export default function TeamClient() {
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">Team</label>
-                <Input
+                <Select
                   value={editUser.team}
-                  onChange={(e) => setEditUser({ ...editUser, team: e.target.value })}
-                />
+                  onValueChange={(v) => setEditUser({ ...editUser, team: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allTeams.map((t) => (
+                      <SelectItem key={t.id} value={t.name}>{t.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="text-sm font-medium">Role</label>
@@ -469,6 +559,47 @@ export default function TeamClient() {
                 disabled={deleteUserMutation.isPending}
               >
                 {deleteUserMutation.isPending ? 'Deleting...' : 'Delete User'}
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Team Dialog */}
+      <Dialog open={createTeamOpen} onOpenChange={setCreateTeamOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Team</DialogTitle>
+            <DialogDescription>
+              Create a new team to organize members
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Team Name</label>
+              <Input
+                value={newTeamName}
+                onChange={(e) => setNewTeamName(e.target.value)}
+                placeholder="e.g., backend, frontend, devops"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Letters, numbers, hyphens, and underscores only
+              </p>
+            </div>
+            <div>
+              <label className="text-sm font-medium">Description (optional)</label>
+              <Textarea
+                value={newTeamDescription}
+                onChange={(e) => setNewTeamDescription(e.target.value)}
+                placeholder="What does this team do?"
+                rows={2}
+              />
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCreateTeamOpen(false)}>Cancel</Button>
+              <Button onClick={handleCreateTeam} disabled={!newTeamName || createTeam.isPending}>
+                {createTeam.isPending ? 'Creating...' : 'Create Team'}
               </Button>
             </DialogFooter>
           </div>

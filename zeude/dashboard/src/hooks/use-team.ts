@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { queryKeys } from '@/lib/query-keys'
-import type { User, UserRole } from '@/lib/database.types'
+import type { User, UserRole, Team } from '@/lib/database.types'
 
 type UserWithoutKey = Omit<User, 'agent_key' | 'invited_by'>
 
@@ -87,6 +87,66 @@ export function useGenerateKey() {
       const res = await fetch(`/api/admin/users/${userId}/key`, { method: 'POST' })
       if (!res.ok) throw new Error('Failed to generate key')
       return res.json() as Promise<{ agentKey: string }>
+    },
+  })
+}
+
+// --- Teams (zeude_teams table) ---
+
+async function fetchTeams(): Promise<Team[]> {
+  const res = await fetch('/api/admin/teams')
+  if (res.status === 403) {
+    window.location.href = '/unauthorized'
+    throw new Error('Unauthorized')
+  }
+  if (!res.ok) throw new Error('Failed to fetch teams')
+  const data = await res.json()
+  return data.teams
+}
+
+export function useTeams() {
+  return useQuery({
+    queryKey: queryKeys.teams.all,
+    queryFn: fetchTeams,
+    staleTime: 60_000,
+  })
+}
+
+export function useCreateTeam() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ name, description }: { name: string; description?: string }) => {
+      const res = await fetch('/api/admin/teams', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description }),
+      })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to create team')
+      }
+      return res.json() as Promise<{ team: Team }>
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.teams.all })
+      qc.invalidateQueries({ queryKey: queryKeys.team.all })
+    },
+  })
+}
+
+export function useDeleteTeam() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/teams/${id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to delete team')
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: queryKeys.teams.all })
+      qc.invalidateQueries({ queryKey: queryKeys.team.all })
     },
   })
 }

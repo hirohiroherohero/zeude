@@ -1,0 +1,68 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    timeout: 1s
+    send_batch_size: 1000
+
+  transform/codex:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        conditions:
+          - resource.attributes["service.name"] == "codex" or resource.attributes["service.name"] == "codex_cli_rs" or resource.attributes["service.name"] == "codex_exec"
+        statements:
+          - set(attributes["input_tokens"], attributes["input_token_count"]) where attributes["input_token_count"] != nil
+          - set(attributes["output_tokens"], attributes["output_token_count"]) where attributes["output_token_count"] != nil
+          - set(attributes["cache_read_tokens"], attributes["cached_token_count"]) where attributes["cached_token_count"] != nil
+          - set(attributes["cache_creation_tokens"], "0") where attributes["cache_creation_tokens"] == nil
+          - set(attributes["cost_usd"], "0") where attributes["cost_usd"] == nil
+          - set(attributes["session.id"], attributes["conversation.id"]) where attributes["conversation.id"] != nil and attributes["session.id"] == nil
+          - set(attributes["user.id"], attributes["user.account_id"]) where attributes["user.account_id"] != nil and attributes["user.id"] == nil
+          - set(attributes["user.id"], resource.attributes["zeude.user.id"]) where resource.attributes["zeude.user.id"] != nil and resource.attributes["zeude.user.id"] != ""
+          - set(attributes["user.email"], resource.attributes["zeude.user.email"]) where resource.attributes["zeude.user.email"] != nil
+          - set(attributes["team"], resource.attributes["zeude.team"]) where resource.attributes["zeude.team"] != nil
+          - set(attributes["working_directory"], resource.attributes["zeude.working_directory"]) where resource.attributes["zeude.working_directory"] != nil
+          - set(attributes["project_path"], resource.attributes["zeude.project_path"]) where resource.attributes["zeude.project_path"] != nil
+          - set(attributes["organization.id"], "") where attributes["organization.id"] == nil
+
+exporters:
+  clickhouse:
+    endpoint: ${CLICKHOUSE_ENDPOINT}
+    database: ${CLICKHOUSE_DATABASE:-default}
+    username: ${CLICKHOUSE_USER:-default}
+    password: ${CLICKHOUSE_PASSWORD}
+    logs_table_name: claude_code_logs
+    traces_table_name: claude_code_traces
+    metrics_table_name: claude_code_metrics
+    timeout: 10s
+    retry_on_failure:
+      enabled: true
+      initial_interval: 5s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    ttl: 2160h
+
+service:
+  telemetry:
+    logs:
+      level: info
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [transform/codex, batch]
+      exporters: [clickhouse]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [clickhouse]
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [clickhouse]

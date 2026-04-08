@@ -9,10 +9,10 @@ import (
 )
 
 const (
-	// DefaultCollectorEndpoint is the default OTel collector gRPC endpoint.
-	DefaultCollectorEndpoint = "https://your-otel-collector-url/"
+	// DefaultCollectorEndpoint is the default OTel collector endpoint.
+	DefaultCollectorEndpoint = "https://zeude-vwuo.vercel.app"
 	// DefaultDashboardURL is the default Zeude dashboard URL.
-	DefaultDashboardURL = "https://your-dashboard-url"
+	DefaultDashboardURL = "https://zeude-vwuo.vercel.app"
 	// DefaultHTTPPort is the default OTel collector HTTP port.
 	DefaultHTTPPort = "4318"
 	// DefaultGRPCPort is the default OTel collector gRPC port.

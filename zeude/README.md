@@ -28,16 +28,16 @@ Zeude gives engineering teams visibility into how Claude Code and OpenAI Codex a
 ## Architecture
 
 ```
-Developer Machine                          Self-Hosted Infrastructure
+Developer Machine                          Cloud Infrastructure
 ┌──────────────────────┐                   ┌────────────────────────────┐
 │                      │                   │                            │
 │  claude/codex (shim) │──── on startup ──▶│  Zeude Dashboard (Next.js) │
-│  ~/.zeude/bin/       │   sync config     │  ├── Supabase (users, config)
-│         │            │                   │  └── ClickHouse (telemetry)│
-│         ▼            │                   │                            │
-│  real claude/codex   │                   │  OTel Collector            │
-│  (original binary)   │──── telemetry ──▶│  (receives spans & logs)   │
-│                      │                   │                            │
+│  ~/.zeude/bin/       │   sync config     │  Vercel                    │
+│         │            │                   │  ├── Supabase (users, config)
+│         ▼            │                   │  ├── /api/otel/* (OTel proxy)
+│  real claude/codex   │                   │  └── ClickHouse Cloud      │
+│  (original binary)   │──── telemetry ──▶│      (telemetry storage)   │
+│                      │   HTTP/protobuf   │                            │
 └──────────────────────┘                   └────────────────────────────┘
 ```
 
@@ -67,7 +67,7 @@ npm run dev
 ### 2. Install the CLI shim
 
 ```bash
-curl -fsSL https://YOUR_DASHBOARD_URL/releases/install.sh | ZEUDE_AGENT_KEY=zd_xxx bash
+curl -fsSL https://zeude-vwuo.vercel.app/releases/install.sh | ZEUDE_AGENT_KEY=zd_xxx bash
 ```
 
 ### 3. Verify
@@ -108,7 +108,7 @@ zeude/
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `ZEUDE_AGENT_KEY` | Agent key for authentication | — |
-| `ZEUDE_DASHBOARD_URL` | Dashboard URL | `https://your-dashboard-url` |
+| `ZEUDE_DASHBOARD_URL` | Dashboard URL | `https://zeude-vwuo.vercel.app` |
 | `ZEUDE_DEBUG` | Enable debug logging (`1` to enable) | `0` |
 
 ### Credential files
@@ -118,8 +118,8 @@ zeude/
 agent_key=zd_your_agent_key
 
 # ~/.zeude/config
-endpoint=https://your-otel-collector-url/
-dashboard_url=https://your-dashboard-url
+endpoint=https://zeude-vwuo.vercel.app
+dashboard_url=https://zeude-vwuo.vercel.app
 ```
 
 ## Development

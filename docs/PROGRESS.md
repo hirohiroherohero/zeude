@@ -6,7 +6,7 @@
 
 ## 현재 상태 요약
 
-- **대시보드 배포 완료**: https://zeude-vwuo-ehfh2idms-hirohiroheroheros-projects.vercel.app
+- **대시보드 배포 완료**: https://zeude-vwuo.vercel.app
 - **GitHub Fork**: https://github.com/hirohiroherohero/zeude
 - **Supabase 프로젝트**: `jccrfdkprilwmkklklef` (클라우드, 마이그레이션 완료)
 - **로컬 CLI 설치 완료**: `~/.zeude/bin/claude`, `~/.zeude/bin/zeude`
@@ -44,7 +44,7 @@
 
 - [ ] 대시보드 기능 테스트 (Skills, Hooks, MCP, Agents 생성해보기)
 - [ ] `NEXT_PUBLIC_APP_URL` 환경변수 Vercel에 추가
-  - 값: `https://zeude-vwuo-ehfh2idms-hirohiroheroheros-projects.vercel.app`
+  - 값: `https://zeude-vwuo.vercel.app`
   - 추가 후 Redeploy 필요
   - **이거 안 하면 초대 링크 URL이 `zeude.zep.work`(원본 기본값)으로 생성됨**
 

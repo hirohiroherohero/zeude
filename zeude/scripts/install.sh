@@ -4,9 +4,9 @@
 set -e
 
 # Configuration
-DOWNLOAD_BASE="${ZEUDE_DOWNLOAD_BASE:-https://your-dashboard-url}"
-DEFAULT_ENDPOINT="https://your-otel-collector-url/"
-DEFAULT_DASHBOARD="https://your-dashboard-url"
+DOWNLOAD_BASE="${ZEUDE_DOWNLOAD_BASE:-https://zeude-vwuo.vercel.app}"
+DEFAULT_ENDPOINT="https://zeude-vwuo.vercel.app"
+DEFAULT_DASHBOARD="https://zeude-vwuo.vercel.app"
 
 # Colors for output
 RED='\033[0;31m'

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   title: "Zeude Dashboard",
   description: "Monitor your Claude Code usage and costs",
   icons: {
-    icon: "/Zep-logo-full.svg",
+    icon: "/Logo.svg",
   },
 };
 

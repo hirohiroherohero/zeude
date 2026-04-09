@@ -42,8 +42,8 @@
 
 ### 즉시 필요
 
-- [ ] 대시보드 기능 테스트 (Skills, Hooks, MCP, Agents 생성해보기)
-- [ ] `NEXT_PUBLIC_APP_URL` 환경변수 Vercel에 추가
+- [x] 대시보드 기능 테스트 (Skills, Hooks, MCP, Agents 생성해보기)
+- [x] `NEXT_PUBLIC_APP_URL` 환경변수 Vercel에 추가
   - 값: `https://zeude-vwuo.vercel.app`
   - 추가 후 Redeploy 필요
   - **이거 안 하면 초대 링크 URL이 `zeude.zep.work`(원본 기본값)으로 생성됨**
@@ -81,7 +81,7 @@
 | `CLICKHOUSE_USER` | ✅ 더미값 |
 | `CLICKHOUSE_PASSWORD` | ✅ 더미값 |
 | `CLICKHOUSE_DATABASE` | ✅ 더미값 |
-| `NEXT_PUBLIC_APP_URL` | ❌ 미설정 (초대 링크 URL에 영향, 반드시 추가 필요) |
+| `NEXT_PUBLIC_APP_URL` | ✅ 설정됨 |
 
 ### 로컬 설정 파일 경로
 
